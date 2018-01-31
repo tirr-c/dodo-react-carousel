@@ -7,6 +7,7 @@ interface Props {
     position: number;
     threshold: number;
     transitionDuration?: string;
+    dynamicSize: boolean;
     onDragStart?: () => void;
     onDragEnd?: () => void;
     onPositionChange?: (position: number) => void;
@@ -49,11 +50,12 @@ export class Carousel extends React.Component<Props, State> {
     public static defaultProps: Partial<Props> = {
         position: 0,
         threshold: 0.1,
-        // transitionDuration: '1s',
+        dynamicSize: false,
     };
 
     private carouselWindow: HTMLElement | null = null;
     private carousel: HTMLElement | null = null;
+    private cachedWidth: number | null = null;
 
 
     constructor(props: Props) {
@@ -143,7 +145,10 @@ export class Carousel extends React.Component<Props, State> {
                  onMouseUp={this.mouseUp}
                  onMouseLeave={this.mouseLeave}
                  onTouchStart={this.touchStart}
-                 ref={el => this.carouselWindow = el}>
+                 ref={el => {
+                     this.carouselWindow = el;
+                     this.cachedWidth = el == null ? null : el.offsetWidth;
+                 }}>
                 <div className={carouselClassList}
                      style={dragStyle}
                      onTransitionEnd={this.processStable}
@@ -398,12 +403,22 @@ export class Carousel extends React.Component<Props, State> {
         });
     }
 
+    get carouselWindowWidth() {
+        if (this.props.dynamicSize) {
+            if (this.carouselWindow === null) {
+                return 0;
+            }
+            return this.carouselWindow.offsetWidth;
+        }
+        return this.cachedWidth || 0;
+    }
+
     get currentSlidePos() {
         if (this.carouselWindow === null || this.carousel === null) {
             return 0;
         }
         const invertedPos =
-            this.carousel.offsetLeft / this.carouselWindow.offsetWidth + 1;
+            this.carousel.offsetLeft / this.carouselWindowWidth + 1;
         return -invertedPos;
     }
 
@@ -411,7 +426,7 @@ export class Carousel extends React.Component<Props, State> {
         if (this.carouselWindow === null) {
             return 0;
         }
-        return -((current - start) / this.carouselWindow.offsetWidth);
+        return -((current - start) / this.carouselWindowWidth);
     }
 
     get dragDelta() {

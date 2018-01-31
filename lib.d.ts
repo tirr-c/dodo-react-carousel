@@ -4,6 +4,7 @@ interface Props {
     position: number;
     sensitivity: number;
     transitionDuration: string;
+    dynamicSize: boolean;
     onDragStart: () => void;
     onDragEnd: () => void;
     onPositionChange: (position: number) => void;
