@@ -241,10 +241,11 @@ export class Carousel extends React.Component<Props, State> {
         } else if ((flick && delta > threshold) || (!flick && pos > 0.5)) {
             this.slide('right');
         }
-        this.setState({ drag: null });
+        const nextState = { drag: null, transition: false };
         if (pos !== 0) {
-            this.setState({ transition: true });
+            nextState.transition = true;
         }
+        this.setState(nextState);
         if (this.props.onDragEnd != null) {
             this.props.onDragEnd();
         }
