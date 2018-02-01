@@ -1,6 +1,6 @@
 {
   "name": "@spoqa/react-carousel",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A simple React carousel component",
   "main": "lib/index.js",
   "types": "lib.d.ts",
